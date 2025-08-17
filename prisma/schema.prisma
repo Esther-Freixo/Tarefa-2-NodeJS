@@ -22,6 +22,8 @@ model User {
   photo    String
 
   posts Post[]
+  comment Comment[]
+  like Like[]
 
   @@map("users")
 }
@@ -35,5 +37,39 @@ model Post {
   userId     String
   user       User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  comment Comment[]
+  like Like[]
+
   @@map("posts")
+}
+
+model Comment {
+  id       String @id @default(uuid())
+  content    String
+  created_at DateTime
+  like Like[]
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+  }
+
+model Like {
+  id       String @id @default(uuid())
+  created_at DateTime
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId String?
+  post Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  commentId String?
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@map("likes")
 }
