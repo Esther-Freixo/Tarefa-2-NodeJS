@@ -1,55 +1,38 @@
 import { prisma } from '../../app';
-import { Prisma } from "@prisma/client";
+import { Prisma, Like } from "@prisma/client";
+import { LikesRepository } from '../likes-repository';
 
 export class PrismaLikesRepository implements LikesRepository {
+  async create(data: Prisma.LikeUncheckedCreateInput): Promise<Like> {
+    return prisma.like.create({ data });
+  }
 
+  async findAllLikes(): Promise<Like[]> {
+    return prisma.like.findMany();
+  }
 
-    async create(data: Prisma.LikeUncheckedCreateInput) {
-        const like = await prisma.like.create({ data });
-        return like;
-    }
+  async delete(id: string): Promise<Like | null> {
+    return prisma.like.delete({ where: { id } });
+  }
 
-    async findAllLikes() {
-        const like = await prisma.like.findMany();
-        return like;
-    }
+  async findById(id: string): Promise<Like | null> {
+    return prisma.like.findUnique({ where: { id } });
+  }
 
-    async delete(id: string) {
-        const like = await prisma.like.delete({
-            where: {
-                id
-            }
-        })
-        return like;
-    }
+  async findByLikeId(userId: string): Promise<Like[]> {
+    return prisma.like.findMany({ where: { userId } });
+  }
 
-    async findById(id: string) {
-        const like = await prisma.like.findUnique({
-            where: {
-                id
-            }
-        })
-        return like;
-    }
-
-    async update(id: string, data: any) {
-        const like = await prisma.like.update({
-            where: { id },
-            data: {
-                title: data.title,
-                content: data.content,
-            }
-        })
-        return like;
-    }
-
-    async findByLikeId(userId: string) {
-        const like = await prisma.like.findMany({
-            where: {
-                userId
-            }
-        })
-        return like;
-
-    }
+  async findByPostId(postId: string) {
+    return prisma.like.findMany({
+      where: { postId },
+    });
+  }
+  
+  async findByCommentId(commentId: string) {
+    return prisma.like.findMany({
+      where: { commentId },
+    });
+  }
+  
 }

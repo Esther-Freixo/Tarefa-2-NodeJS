@@ -7,6 +7,8 @@ import fastifyCors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
 import { env } from 'process';
 import fastifyCookie from '@fastify/cookie';
+import { likesRoutes } from './http/controllers/likes/routes';
+import { commentsRoutes } from './http/controllers/comments/routes';
 
 export const app = fastify();
 export const prisma = new PrismaClient();
@@ -25,10 +27,10 @@ app.register(fastifyJwt, {
   }
 })
 
-// app.register(fastifyCookie)
-
 app.register(userRoutes);
 app.register(postsRoutes);
+app.register(likesRoutes);
+app.register(commentsRoutes);
 
 app.setErrorHandler((error, resquest, reply) => {
   if (error instanceof ZodError) {
