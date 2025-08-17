@@ -6,28 +6,28 @@ import { CreatePostUseCase } from "../../../use-cases/posts/register-posts-use-c
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createBodySchema = z.object({
-    title: z.string(),
     created_at: z.string().transform((str) => new Date(str)),
-    content: z.string(),
+    postId: z.string().optional(),
+    commentId: z.string().optional(),
   });
 
   const {
-    title,
-    content,
     created_at,
+    postId,
+    commentId,
   } = createBodySchema.parse(request.body);
 
   const userId = request.user.sub;
 
 
   try {
-    const prismaPostsRepository = new PrismaPostsRepository()
-    const createPostsUseCase = new CreatePostUseCase(prismaPostsRepository)
-    await createPostsUseCase.execute({
-        title,
-        content,
+    const prismaLikesRepository = new PrismaLikesRepository()
+    const createLikesUseCase = new CreateLikesUseCase(prismaLikesRepository)
+    await createLikesUseCase.execute({
         created_at,
         userId,
+        postId,
+        commentId,
     })
   } catch (error) {
     throw error

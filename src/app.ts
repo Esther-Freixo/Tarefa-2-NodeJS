@@ -20,16 +20,12 @@ app.register(fastifyCors, {
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
-  cookie: {
-    cookieName: 'refreshToken',
-    signed: false,
-  },
   sign: {
     expiresIn: '10m'
   }
 })
 
-app.register(fastifyCookie)
+// app.register(fastifyCookie)
 
 app.register(userRoutes);
 app.register(postsRoutes);

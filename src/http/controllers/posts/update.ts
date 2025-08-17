@@ -14,14 +14,26 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
         title: z.string().optional(),
         content: z.string().optional(),
     })
+    
+    const userId = request.user.sub;
     const { postId } = updateParamsSchema.parse(request.params);
     const { title, content } = updateBodySchema.parse(request.body);
 
 
     try {
         const prismapostsRepository = new PrismaPostsRepository()
+        const post = await prismapostsRepository.findById(postId);
+
+        if (!post) {
+            throw new ResourceNotFoundError();
+        }
+
+        if (post.userId !== userId) {
+            return reply.status(403).send({ message: "Permissão para atualizar este post foi negada." });
+        }
+
         const updatePostUseCase = new UpdatePostUseCase(prismapostsRepository)
-        const post = await updatePostUseCase.execute({
+        await updatePostUseCase.execute({
             postId, data: { title, content }
         })
 

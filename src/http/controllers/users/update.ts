@@ -19,10 +19,14 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
     })
     const { userId } = updateParamsSchema.parse(request.params);
     const { name, email, photo, password } = updateBodySchema.parse(request.body);
+    const userIdAuth = request.user.sub;
 
 
     try {
         const prismaUsersRepository = new PrismaUsersRepository()
+        if (userId !== userIdAuth) {
+            return reply.status(403).send({ message: "Permissão para atualizar este usuário foi negada." });
+        }
         const updateUserUseCase = new UpdateUserUseCase(prismaUsersRepository)
         const user = await updateUserUseCase.execute({
             userId, data: { name, email, photo, password }

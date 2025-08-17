@@ -11,9 +11,15 @@ export async function deleteUser(request: FastifyRequest, reply: FastifyReply) {
     });
   
     const { userId } = getParamsSchema.parse(request.params);
+    const userIdAuth = request.user.sub;
   
     try {
         const prismaUsersRepository = new PrismaUsersRepository()
+        
+        if (userId !== userId) {
+            return reply.status(403).send({ message: "Permissão para atualizar este post foi negada." });
+        }
+
         const deleteUserUseCase = new DeleteUserUseCase(prismaUsersRepository)
         const user = await deleteUserUseCase.execute({ userId })
 
